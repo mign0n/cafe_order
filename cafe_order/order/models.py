@@ -1,3 +1,4 @@
+from django.core.validators import MinValueValidator
 from django.db import models
 
 from order.constants import OrderStatus
@@ -13,7 +14,9 @@ class Meal(models.Model):
 
 class Order(models.Model):
     items = models.ManyToManyField(Meal, related_name='order_meals')
-    table_number = models.PositiveSmallIntegerField()
+    table_number = models.PositiveSmallIntegerField(
+        validators=(MinValueValidator(1),),
+    )
     status = models.CharField(
         choices=OrderStatus,
         default=OrderStatus.WAITING,
