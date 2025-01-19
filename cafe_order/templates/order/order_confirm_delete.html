@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}
+  Delete the order
+{% endblock title %}
+{% block content %}
+  <div>
+    <h1>Delete the order</h1>
+    <form method="post">
+      {% csrf_token %}
+      <p>Are you sure you want to delete "{{ object }}"?</p>
+      {{ form }}
+      <input type="submit" class="confirm-delete-button" value="Confirm">
+    </form>
+  </div>
+{% endblock content %}
