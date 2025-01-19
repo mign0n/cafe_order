@@ -1,5 +1,5 @@
 from django.urls import reverse_lazy
-from django.views.generic import CreateView
+from django.views.generic import CreateView, ListView
 
 from order.models import Meal, Order
 
@@ -16,3 +16,8 @@ class MealsCreateView(CreateView):
     fields = ('name', 'price')
     success_url = reverse_lazy('order:meal')
     template_name = 'order/meal_create.html'
+
+
+class OrderListView(ListView):
+    model = Order
+    template_name = 'order/order_list.html'

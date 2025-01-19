@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}
+  Orders
+{% endblock title %}
+{% block content %}
+  <div>
+    <h1>Orders</h1>
+      <table>
+        <tr>
+          <th>Order ID</th>
+          <th>Table number</th>
+          <th>Meals list</th>
+          <th>Total price</th>
+          <th>Status</th>
+        </tr>
+
+        {% for order in order_list %}
+          <tr>
+            <td>{{ order.pk }}</td>
+            <td>{{ order.table_number }}</td>
+            <td>
+              <ol>
+                {% for item in order.items.all %}
+                  <li>{{ item.name }}</li>
+                {% endfor %}
+              </ol>
+            </td>
+            <td>{{ order.total_price }}</td>
+            <td>{{ order.status }}</td>
+          </tr>
+        {% empty %}
+          <td>No orders yet.</td>
+        {% endfor %}
+
+      </table>
+  </div>
+{% endblock content %}

@@ -1,5 +1,7 @@
+from decimal import Decimal
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.db.utils import cached_property
 
 from order.constants import OrderStatus
 
@@ -22,6 +24,12 @@ class Order(models.Model):
         default=OrderStatus.WAITING,
         max_length=10,
     )
+
+    @cached_property
+    def total_price(self) -> Decimal:
+        return self.items.values('order_meals').aggregate(
+            total_price=models.Sum('price'),
+        ).get('total_price')
 
     def __str__(self) -> str:
         return (
