@@ -16,6 +16,43 @@
       th {
         background-color: #f2f2f2;
       }
+      form {
+          max-width: 400px;
+          margin: 0 auto;
+          padding: 20px;
+          border: 1px solid #ccc;
+          border-radius: 10px;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+      }
+      
+      label {
+          display: block;
+          margin-bottom: 10px;
+      }
+      
+      input, select {
+          width: 100%;
+          padding: 12px 20px;
+          margin-bottom: 20px;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+          box-sizing: border-box;
+      }
+      
+      input[type=submit] {
+          background-color: #4CAF50;
+          color: white;
+          padding: 14px 20px;
+          margin-top: 20px;
+          border: none;
+          cursor: pointer;
+          width: 100%;
+          transition: background-color 0.3s ease;
+      }
+
+      input[type=submit]:hover {
+          background-color: #45a049;
+      }
     </style>
     <title>
       {% block title %}
@@ -24,8 +61,10 @@
   </head>
   <body>
     <main>
-      {% block content %}
-      {% endblock content %}
+      <div style="text-align: center;">
+        {% block content %}
+        {% endblock content %}
+      </div>
     </main>
   </body>
 </html>
