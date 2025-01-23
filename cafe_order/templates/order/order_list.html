@@ -19,23 +19,14 @@
         Revenue
       </button>
 
-      <form action="/search-order/" method="get">
-        <label for="table_number">Table number:</label>
-        <input type="number"
-               id="table_number"
-               name="table_number"
-               class="input-select">
-
-        <label for="status">Status:</label>
-        <select id="status" name="status" class="input-select">
-          <option value="">All statuses</option>
-          <option value="WAITING">Waiting</option>
-          <option value="IN_PROGRESS">In progress</option>
-          <option value="COMPLETED">Completed</option>
-        </select>
-
+      <form action="{% url 'order:order_list' %}"
+            method="post"
+            class="inline-elements">
+        {% csrf_token %}
+        {{ form }}
         <button class="default-button" type="submit">Find</button>
       </form>
+
     </div>
 
     <table>
@@ -48,7 +39,7 @@
         <th>Actions</th>
       </tr>
 
-      {% for order in order_list %}
+      {% for order in orders %}
         <tr>
           <td>{{ order.pk }}</td>
           <td>{{ order.table_number }}</td>
@@ -72,7 +63,7 @@
           </td>
         </tr>
       {% empty %}
-        <td colspan="6">No orders yet.</td>
+        <td colspan="6">No orders.</td>
       {% endfor %}
 
     </table>

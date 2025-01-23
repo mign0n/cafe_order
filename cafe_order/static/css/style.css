@@ -10,11 +10,11 @@ body {
 }
 .inline-elements {
   width: 50%;
-  display: flex;
+  display: inline-flex;
   justify-content: space-between;
   align-items: center;
   gap: 10px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 .input-select {
   padding: 8px 16px;
