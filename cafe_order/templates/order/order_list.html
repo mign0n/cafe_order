@@ -1,37 +1,80 @@
 {% extends "base.html" %}
+
 {% block title %}
   Orders
 {% endblock title %}
+
 {% block content %}
-  <div>
+  <div class="container">
     <h1>Orders</h1>
-      <table>
+
+    <div class="inline-elements">
+      <button class="default-button" onclick="window.location.href='/order/'">
+        Add an order
+      </button>
+      <button class="default-button" onclick="window.location.href='/meal/'">
+        Add a dish
+      </button>
+      <button class="default-button" onclick="window.location.href='/revenue/'">
+        Revenue
+      </button>
+
+      <form action="/search-order/" method="get">
+        <label for="table_number">Table number:</label>
+        <input type="number"
+               id="table_number"
+               name="table_number"
+               class="input-select">
+
+        <label for="status">Status:</label>
+        <select id="status" name="status" class="input-select">
+          <option value="">All statuses</option>
+          <option value="WAITING">Waiting</option>
+          <option value="IN_PROGRESS">In progress</option>
+          <option value="COMPLETED">Completed</option>
+        </select>
+
+        <button class="default-button" type="submit">Find</button>
+      </form>
+    </div>
+
+    <table>
+      <tr>
+        <th>Order ID</th>
+        <th>Table number</th>
+        <th>Meals list</th>
+        <th>Total price</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+
+      {% for order in order_list %}
         <tr>
-          <th>Order ID</th>
-          <th>Table number</th>
-          <th>Meals list</th>
-          <th>Total price</th>
-          <th>Status</th>
+          <td>{{ order.pk }}</td>
+          <td>{{ order.table_number }}</td>
+          <td>
+            <ol>
+              {% for item in order.items.all %}<li>{{ item.name }}</li>{% endfor %}
+            </ol>
+          </td>
+          <td>{{ order.total_price }}</td>
+          <td>{{ order.get_status_display }}</td>
+          <td>
+            <button type="button"
+                    class="default-button"
+                    onclick="window.location.href='/change-status/{{ order.pk }}/'">
+              Change the status
+            </button>
+            <button class="delete-button"
+                    onclick="window.location.href='/order/{{ order.pk }}/delete'">
+              Delete
+            </button>
+          </td>
         </tr>
+      {% empty %}
+        <td colspan="6">No orders yet.</td>
+      {% endfor %}
 
-        {% for order in order_list %}
-          <tr>
-            <td>{{ order.pk }}</td>
-            <td>{{ order.table_number }}</td>
-            <td>
-              <ol>
-                {% for item in order.items.all %}
-                  <li>{{ item.name }}</li>
-                {% endfor %}
-              </ol>
-            </td>
-            <td>{{ order.total_price }}</td>
-            <td>{{ order.status }}</td>
-          </tr>
-        {% empty %}
-          <td>No orders yet.</td>
-        {% endfor %}
-
-      </table>
+    </table>
   </div>
 {% endblock content %}
