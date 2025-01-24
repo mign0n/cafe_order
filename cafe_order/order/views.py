@@ -1,8 +1,6 @@
-from django.db.models import Sum
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
-from django.utils.timezone import datetime
 from django.views.generic import (
     CreateView,
     DeleteView,
@@ -12,7 +10,6 @@ from django.views.generic import (
 )
 
 from order import forms, models
-from order.constants import OrderStatus
 
 
 class MealsCreateView(CreateView):
@@ -158,12 +155,9 @@ class CurrentDayRevenueView(View):
         return render(
             request,
             self.template_name,
-            {'revenue': self.model.objects.filter(
-                status=OrderStatus.PAID_FOR,
-                created_at__date=datetime.now().date(),
-                ).annotate(total_price=Sum('items__price'))
-                    .aggregate(
-                        sum_of_total_prices=Sum('total_price'),
-                    )['sum_of_total_prices'] or 0
+            {
+                'revenue': self.model.objects.get_revenue_for_day().get(
+                    'revenue_per_shift',
+                ),
             },
         )

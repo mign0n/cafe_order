@@ -1,6 +1,3 @@
-from django.db.models import Sum
-from django.utils.timezone import datetime
-from order.constants import OrderStatus
 from order.models import Meal, Order
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -45,13 +42,4 @@ class OrderViewSet(viewsets.ModelViewSet):
         Возвращает:
             Ответ с суммой дохода за текущую дату.
         """
-        return Response(
-            self.queryset.filter(
-                status=OrderStatus.PAID_FOR,
-                created_at__date=datetime.now().date(),
-            ).annotate(
-                total_price=Sum('items__price'),
-            ).aggregate(
-                revenue_per_shift=Sum('total_price', default=0),
-            ),
-        )
+        return Response(Order.objects.get_revenue_for_day())
