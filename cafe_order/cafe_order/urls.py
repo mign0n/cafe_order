@@ -1,3 +1,8 @@
+from core.views import (
+    PageNotFoundView,
+    PermissionDeniedView,
+    ServerErrorView,
+)
 from django.apps import apps
 from django.contrib import admin
 from django.urls import include, path
@@ -13,3 +18,7 @@ urlpatterns = [
     ),
     path('admin/', admin.site.urls),
 ]
+
+handler404 = PageNotFoundView.as_view()
+handler500 = ServerErrorView.as_view()
+handler403 = PermissionDeniedView.as_view()

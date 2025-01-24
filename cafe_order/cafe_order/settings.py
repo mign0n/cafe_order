@@ -6,7 +6,7 @@ SECRET_KEY = 'django-insecure-soo%(6g9c(*u7gvqf+!x7zac_xg!$i!22x(415k^g#pyz4zezv
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1',]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -15,7 +15,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'order.apps.OrderConfig'
+    'order.apps.OrderConfig',
+    'core.apps.CoreConfig',
 ]
 
 MIDDLEWARE = [
@@ -86,3 +87,5 @@ STATICFILES_DIRS = (BASE_DIR / 'static',)
 STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CSRF_FAILURE_VIEW = 'core.views.csrf_failure'
