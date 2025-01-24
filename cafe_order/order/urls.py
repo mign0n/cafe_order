@@ -5,6 +5,7 @@ from order.views import (
     OrderCreateView,
     OrderDeleteView,
     OrderListView,
+    OrderUpdateView,
 )
 
 
@@ -18,5 +19,10 @@ urlpatterns = [
         'order/<int:pk>/delete',
         OrderDeleteView.as_view(),
         name='order_delete',
+    ),
+    path(
+        'order/<int:pk>/change-status',
+        OrderUpdateView.as_view(),
+        name='order_update',
     ),
 ]

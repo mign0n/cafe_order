@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}
+  Update the order
+{% endblock title %}
+{% block content %}
+  <div class="container">
+    <h1>Update order status</h1>
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <input type="submit" class="default-button" value="Save">
+      <button type="button"
+              class="delete-button"
+              onclick="window.location.href='/'">Cancel</button>
+    </form>
+  </div>
+{% endblock content %}

@@ -1,10 +1,17 @@
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, DeleteView, ListView
+from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 
 from order import forms
 from order import models
+
+
+class MealsCreateView(CreateView):
+    model = models.Meal
+    form_class = forms.MealForm
+    success_url = reverse_lazy('order:meal')
+    template_name = 'order/meal_create.html'
 
 
 class OrderCreateView(CreateView):
@@ -14,11 +21,9 @@ class OrderCreateView(CreateView):
     template_name = 'order/order_create.html'
 
 
-class MealsCreateView(CreateView):
-    model = models.Meal
-    form_class = forms.MealForm
-    success_url = reverse_lazy('order:meal')
-    template_name = 'order/meal_create.html'
+class OrderDeleteView(DeleteView):
+    model = models.Order
+    success_url = reverse_lazy('order:order_list')
 
 
 class OrderListView(ListView):
@@ -57,6 +62,8 @@ class OrderListView(ListView):
         )
 
 
-class OrderDeleteView(DeleteView):
+class OrderUpdateView(UpdateView):
     model = models.Order
+    fields = ('status',)
     success_url = reverse_lazy('order:order_list')
+    template_name = 'order/order_update.html'
