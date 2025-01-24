@@ -15,14 +15,10 @@ class Meal(models.Model):
         price: Цена блюда.
     """
 
-    name = models.CharField(
-        max_length=200,
-        help_text='Название блюда.',
-    )
+    name = models.CharField(max_length=200)
     price = models.DecimalField(
         max_digits=6,
         decimal_places=2,
-        help_text='Цена блюда.',
     )
 
     def __str__(self) -> str:
@@ -43,21 +39,17 @@ class Order(models.Model):
     items = models.ManyToManyField(
         Meal,
         related_name='order_meals',
-        help_text='Блюда, включённые в заказ.',
     )
     table_number = models.PositiveSmallIntegerField(
         validators=(MinValueValidator(1),),
-        help_text='Номер стола, за которым был сделан заказ.',
     )
     status = models.CharField(
         choices=OrderStatus,
         default=OrderStatus.WAITING,
         max_length=10,
-        help_text='Текущий статус заказа.',
     )
     created_at = models.DateTimeField(
         auto_now_add=True,
-        help_text='Время создания заказа.',
     )
 
     @cached_property
