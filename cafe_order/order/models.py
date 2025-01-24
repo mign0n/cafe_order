@@ -24,6 +24,7 @@ class Order(models.Model):
         default=OrderStatus.WAITING,
         max_length=10,
     )
+    created_at = models.DateTimeField(auto_now_add=True)
 
     @cached_property
     def total_price(self) -> Decimal:

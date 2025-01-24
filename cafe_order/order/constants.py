@@ -3,6 +3,6 @@ from django.db import models
 
 class OrderStatus(models.TextChoices):
     EMPTY = '', '----------'
-    WAITING = 'WAITING', 'В ожидании'
-    READY = 'READY', 'Готов'
-    PAID_FOR = 'PAID_FOR', 'Оплаченный'
+    WAITING = 'WAITING', 'Waiting'
+    READY = 'READY', 'Ready'
+    PAID_FOR = 'PAID_FOR', 'Paid for'

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}
+  Revenue
+{% endblock title %}
+{% block content %}
+  <div class="container">
+    <h1>Revenue per shift</h1>
+    <div class="inline-elements">
+      {{ revenue }} RUB
+      <button type="button"
+              class="default-button"
+              onclick="window.location.href='/'">Back</button>
+    </div>
+  </div>
+{% endblock content %}

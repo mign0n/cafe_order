@@ -8,9 +8,11 @@ class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
         fields = ('table_number', 'items')
-        
+
         widgets = {
-            'table_number': forms.NumberInput(attrs={'class': 'input-select'},),
+            'table_number': forms.NumberInput(
+                attrs={'class': 'input-select'},
+            ),
             'items': forms.SelectMultiple(
                 attrs={
                     'class': 'input-select',
@@ -24,7 +26,7 @@ class MealForm(forms.ModelForm):
     class Meta:
         model = Meal
         fields = ('name', 'price')
-        
+
         widgets = {
             'name': forms.TextInput(attrs={'class': 'input-select'},),
             'price': forms.NumberInput(attrs={'class': 'input-select'}),
@@ -36,7 +38,7 @@ class SearchOrderForm(forms.Form):
     status = forms.ChoiceField(choices=OrderStatus, required=False)
 
     class Meta:
-        
+
         widgets = {
             'table_number': forms.NumberInput(
                 attrs={'class': 'input-select'},

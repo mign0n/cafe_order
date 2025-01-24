@@ -1,6 +1,7 @@
 from django.urls import path
 
 from order.views import (
+    CurrentDayRevenueView,
     MealsCreateView,
     OrderCreateView,
     OrderDeleteView,
@@ -25,4 +26,5 @@ urlpatterns = [
         OrderUpdateView.as_view(),
         name='order_update',
     ),
+    path('revenue/', CurrentDayRevenueView.as_view(), name='revenue'),
 ]
