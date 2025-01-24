@@ -11,12 +11,20 @@ from django.views.generic import (
     View,
 )
 
+from order import forms, models
 from order.constants import OrderStatus
-from order import forms
-from order import models
 
 
 class MealsCreateView(CreateView):
+    """Представление для создания нового блюда.
+
+    Attributes:
+        model: Модель блюда.
+        form_class: Форма для создания блюда.
+        success_url: URL для перенаправления после успешного создания.
+        template_name: Шаблон для отображения формы.
+    """
+
     model = models.Meal
     form_class = forms.MealForm
     success_url = reverse_lazy('order:meal')
@@ -24,6 +32,15 @@ class MealsCreateView(CreateView):
 
 
 class OrderCreateView(CreateView):
+    """Представление для создания нового заказа.
+
+    Attributes:
+        model: Модель заказа.
+        form_class: Форма для создания заказа.
+        success_url: URL для перенаправления после успешного создания.
+        template_name: Шаблон для отображения формы.
+    """
+
     model = models.Order
     form_class = forms.OrderForm
     success_url = reverse_lazy('order:order')
@@ -31,16 +48,39 @@ class OrderCreateView(CreateView):
 
 
 class OrderDeleteView(DeleteView):
+    """Представление для удаления существующего заказа.
+
+    Attributes:
+        model: Модель заказа.
+        success_url: URL для перенаправления после успешного удаления.
+    """
+
     model = models.Order
     success_url = reverse_lazy('order:order_list')
 
 
 class OrderListView(ListView):
+    """Представление для списка заказов.
+
+    Attributes:
+        model: Модель заказа.
+        template_name: Шаблон для отображения списка.
+        form_class: Форма для поиска заказов.
+    """
+
     model = models.Order
     template_name = 'order/order_list.html'
     form_class = forms.SearchOrderForm
 
     def get(self, request: HttpRequest) -> HttpResponse:
+        """Возвращает шаблон с формой поиска и всеми заказами.
+
+        Args:
+            request: Объект HTTP-запроса.
+
+        Returns:
+            Ответ с HTML-контентом страницы.
+        """
         return render(
             request,
             self.template_name,
@@ -48,6 +88,14 @@ class OrderListView(ListView):
         )
 
     def post(self, request: HttpRequest) -> HttpResponse:
+        """Фильтрует список заказов на основе данных формы.
+
+        Args:
+            request: Объект HTTP-запроса.
+
+        Returns:
+            Ответ с HTML-контентом страницы.
+        """
         form = self.form_class(request.POST)
         if form.is_valid():
             data = form.cleaned_data
@@ -72,6 +120,15 @@ class OrderListView(ListView):
 
 
 class OrderUpdateView(UpdateView):
+    """Представление для обновления статуса заказа.
+
+    Attributes:
+        model: Модель заказа.
+        fields: Поля заказа для обновления.
+        success_url: URL для перенаправления после успешного обновления.
+        template_name: Шаблон для отображения формы.
+    """
+
     model = models.Order
     fields = ('status',)
     success_url = reverse_lazy('order:order_list')
@@ -79,10 +136,25 @@ class OrderUpdateView(UpdateView):
 
 
 class CurrentDayRevenueView(View):
+    """Представление для выручки за смену.
+
+    Attributes:
+        model: Модель заказа.
+        template_name: Шаблон для отображения формы.
+    """
+
     model = models.Order
     template_name = 'order/revenue.html'
 
     def get(self, request: HttpRequest) -> HttpResponse:
+        """Возвращает шаблон со значением выручки на текущую дату.
+
+        Args:
+            request: Объект HTTP-запроса.
+
+        Returns:
+            Ответ с HTML-контентом страницы.
+        """
         return render(
             request,
             self.template_name,

@@ -9,7 +9,6 @@ from order.views import (
     OrderUpdateView,
 )
 
-
 app_name = '%(app_label)s'
 
 urlpatterns = [

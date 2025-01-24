@@ -5,7 +5,19 @@ from order.models import Meal, Order
 
 
 class OrderForm(forms.ModelForm):
+    """Форма для создания заказа."""
+
     class Meta:
+        """Метаданные формы.
+
+        Определяет модель, поля и виджеты для формы.
+
+        Attributes:
+            model: Модель, к которой привязана форма.
+            fields: Поля модели, включаемые в форму.
+            widgets: Виджеты для полей формы.
+        """
+
         model = Order
         fields = ('table_number', 'items')
 
@@ -23,7 +35,19 @@ class OrderForm(forms.ModelForm):
 
 
 class MealForm(forms.ModelForm):
+    """Форма для создания блюда."""
+
     class Meta:
+        """Метаданные формы.
+
+        Определяет модель, поля и виджеты для формы.
+
+        Attributes:
+            model: Модель, к которой привязана форма.
+            fields: Поля модели, включаемые в форму.
+            widgets: Виджеты для полей формы.
+        """
+
         model = Meal
         fields = ('name', 'price')
 
@@ -34,10 +58,24 @@ class MealForm(forms.ModelForm):
 
 
 class SearchOrderForm(forms.Form):
+    """Форма поиска заказов.
+
+    Attributes:
+        table_number: Поле ввода номера стола.
+        status: Поле выбора статуса заказа.
+    """
+
     table_number = forms.IntegerField(required=False)
     status = forms.ChoiceField(choices=OrderStatus, required=False)
 
     class Meta:
+        """Метаданные формы.
+
+        Определяет виджеты для полей формы.
+
+        Attributes:
+            widgets: Виджеты для полей формы.
+        """
 
         widgets = {
             'table_number': forms.NumberInput(
