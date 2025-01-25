@@ -3,6 +3,7 @@ name = "cafe-order"
 version = "0.1.0"
 description = "Cafe order management system."
 readme = "README.md"
+license = {file = "LICENSE"}
 requires-python = ">=3.12, <3.13"
 dependencies = [
     "django>=5.1.5",
