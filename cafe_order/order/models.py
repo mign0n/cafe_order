@@ -14,7 +14,7 @@ class OrderManager(models.Manager):
         if not date:
             date = datetime.now().date()
         return self.get_queryset().filter(
-            status='PAID_FOR',
+            status=OrderStatus.PAID_FOR,
             created_at__date=date,
         ).annotate(
             total_price=Sum('items__price'),
@@ -69,7 +69,7 @@ class Order(models.Model):
     )
 
     @cached_property
-    def total_price(self) -> Decimal:
+    def price(self) -> Decimal:
         """Возвращает общую стоимость всех блюд в заказе."""
         return self.items.values('order_meals').aggregate(
             total_price=models.Sum('price'),
