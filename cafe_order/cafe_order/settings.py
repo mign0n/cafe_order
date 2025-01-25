@@ -47,7 +47,7 @@ ROOT_URLCONF = 'cafe_order.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['templates'],
+        'DIRS': [Path(BASE_DIR).joinpath('templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
