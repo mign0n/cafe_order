@@ -1,12 +1,20 @@
+import environ
 from pathlib import Path
+
+env = environ.Env(
+    DEBUG=(bool, False),
+    ALLOWED_HOSTS=(list, [])
+)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-soo%(6g9c(*u7gvqf+!x7zac_xg!$i!22x(415k^g#pyz4zezv'
+environ.Env.read_env(Path(BASE_DIR).parent.joinpath('.env'))
 
-DEBUG = True
+SECRET_KEY = env('SECRET_KEY')
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1',]
+DEBUG = env('DEBUG')
+
+ALLOWED_HOSTS = env('ALLOWED_HOSTS')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -57,7 +65,8 @@ WSGI_APPLICATION = 'cafe_order.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': Path(BASE_DIR).joinpath('db.sqlite3'),
+
     }
 }
 
@@ -87,7 +96,7 @@ USE_I18N = True
 USE_TZ = True
 
 
-STATICFILES_DIRS = (BASE_DIR / 'static',)
+STATICFILES_DIRS = (Path(BASE_DIR).joinpath('static'),)
 STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
