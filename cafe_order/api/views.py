@@ -1,5 +1,5 @@
 from order.models import Meal, Order
-from rest_framework import viewsets
+from rest_framework import filters, viewsets
 from rest_framework.decorators import action
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -29,6 +29,8 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('table_number', 'status')
 
     @action(methods=('GET',), detail=False)
     def revenue(self, request: Request) -> Response:
