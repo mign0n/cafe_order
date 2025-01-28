@@ -22,6 +22,7 @@ class MealSerializer(serializers.ModelSerializer):
             'price',
         )
 
+
 class OrderSerializer(serializers.ModelSerializer):
     """Сериализатор модели заказов.
 
@@ -46,7 +47,7 @@ class OrderSerializer(serializers.ModelSerializer):
             'id',
             'table_number',
             'items',
-            'total_price',
+            'price',
             'status',
             'created_at',
         )
