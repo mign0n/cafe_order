@@ -51,6 +51,8 @@ class DispatchUpdateDeleteViewMixin:
 
         Args:
             request: объект запроса HTTP
+            args: Дополнительные позиционные параметры.
+            kwargs: Дополнительные именованные параметры.
 
         Returns:
             Ответ на запрос.
