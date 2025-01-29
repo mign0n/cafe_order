@@ -13,13 +13,18 @@ class OrderManager(models.Manager):
     def get_revenue_for_day(self, date=None):
         if not date:
             date = datetime.now().date()
-        return self.get_queryset().filter(
-            status=OrderStatus.PAID_FOR,
-            created_at__date=date,
-        ).annotate(
-            total_price=Sum('items__price'),
-        ).aggregate(
-            revenue_per_shift=Sum('total_price', default=0),
+        return (
+            self.get_queryset()
+            .filter(
+                status=OrderStatus.PAID_FOR,
+                created_at__date=date,
+            )
+            .annotate(
+                total_price=Sum('items__price'),
+            )
+            .aggregate(
+                revenue_per_shift=Sum('total_price', default=0),
+            )
         )
 
 
@@ -51,6 +56,7 @@ class Order(models.Model):
         status: Статус заказа.
         created_at: Время создания заказа.
     """
+
     objects = OrderManager()
     items = models.ManyToManyField(
         Meal,
@@ -71,9 +77,13 @@ class Order(models.Model):
     @cached_property
     def price(self) -> Decimal:
         """Возвращает общую стоимость всех блюд в заказе."""
-        return self.items.values('order_meals').aggregate(
-            total_price=models.Sum('price'),
-        ).get('total_price')
+        return (
+            self.items.values('order_meals')
+            .aggregate(
+                total_price=models.Sum('price'),
+            )
+            .get('total_price')
+        )
 
     def __str__(self) -> str:
         """Возвращает строковое представление объекта заказа."""

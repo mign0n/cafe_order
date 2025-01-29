@@ -29,6 +29,7 @@
 
     </div>
 
+    {% include 'includes/messages.html' %}
     <table>
       <tr>
         <th>Order ID</th>
@@ -53,8 +54,8 @@
           <td>
             <button type="button"
                     class="default-button"
-                    onclick="window.location.href='/order/{{ order.pk }}/change-status'">
-              Change the status
+                    onclick="window.location.href='/order/{{ order.pk }}/change'">
+              Change the order
             </button>
             <button class="delete-button"
                     onclick="window.location.href='/order/{{ order.pk }}/delete'">

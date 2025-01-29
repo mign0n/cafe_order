@@ -34,6 +34,24 @@ class OrderForm(forms.ModelForm):
         }
 
 
+class OrderUpdateForm(OrderForm):
+    """Форма для редактирования заказа."""
+
+    class Meta(OrderForm.Meta):
+        """Метаданные формы.
+
+        Определяет поля для формы.
+
+        Attributes:
+            fields: Поля модели, включаемые в форму.
+        """
+
+        fields = (
+            'status',
+            *OrderForm.Meta.fields,
+        )
+
+
 class MealForm(forms.ModelForm):
     """Форма для создания блюда."""
 
@@ -52,7 +70,9 @@ class MealForm(forms.ModelForm):
         fields = ('name', 'price')
 
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'input-select'},),
+            'name': forms.TextInput(
+                attrs={'class': 'input-select'},
+            ),
             'price': forms.NumberInput(attrs={'class': 'input-select'}),
         }
 
@@ -81,5 +101,5 @@ class SearchOrderForm(forms.Form):
             'table_number': forms.NumberInput(
                 attrs={'class': 'input-select'},
             ),
-            'status' : forms.Select(attrs={'class': 'input-select'}),
+            'status': forms.Select(attrs={'class': 'input-select'}),
         }

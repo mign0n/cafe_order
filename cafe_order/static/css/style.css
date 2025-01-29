@@ -59,3 +59,7 @@ th {
 .delete-button:hover {
   background-color: #f4511e;
 }
+
+.messages {
+  color: red;
+}

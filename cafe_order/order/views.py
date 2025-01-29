@@ -1,3 +1,6 @@
+from typing import Any
+
+from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
@@ -9,7 +12,7 @@ from django.views.generic import (
     View,
 )
 
-from order import forms, models
+from order import forms, mixins, models
 
 
 class MealsCreateView(CreateView):
@@ -44,7 +47,7 @@ class OrderCreateView(CreateView):
     template_name = 'order/order_create.html'
 
 
-class OrderDeleteView(DeleteView):
+class OrderDeleteView(mixins.DispatchUpdateDeleteViewMixin, DeleteView):
     """Представление для удаления существующего заказа.
 
     Attributes:
@@ -54,6 +57,7 @@ class OrderDeleteView(DeleteView):
 
     model = models.Order
     success_url = reverse_lazy('order:order_list')
+    warning_message = 'Deleting a paid order is prohibited.'
 
 
 class OrderListView(ListView):
@@ -67,22 +71,13 @@ class OrderListView(ListView):
 
     model = models.Order
     template_name = 'order/order_list.html'
+    context_object_name = 'orders'
     form_class = forms.SearchOrderForm
 
-    def get(self, request: HttpRequest) -> HttpResponse:
-        """Возвращает шаблон с формой поиска и всеми заказами.
-
-        Args:
-            request: Объект HTTP-запроса.
-
-        Returns:
-            Ответ с HTML-контентом страницы.
-        """
-        return render(
-            request,
-            self.template_name,
-            {'form': self.form_class(), 'orders': self.model.objects.all()},
-        )
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context['form'] = self.form_class()
+        return context
 
     def post(self, request: HttpRequest) -> HttpResponse:
         """Фильтрует список заказов на основе данных формы.
@@ -96,27 +91,25 @@ class OrderListView(ListView):
         form = self.form_class(request.POST)
         if form.is_valid():
             data = form.cleaned_data
-            table_number = data.get('table_number')
-            status = data.get('status')
-
             filters = {}
-            if table_number:
-                filters['table_number'] = table_number
-            if status:
-                filters['status'] = status
-
-            orders = self.model.objects.filter(**filters)
+            if data.get('table_number'):
+                filters['table_number'] = data['table_number']
+            if data.get('status'):
+                filters['status'] = data['status']
+            queryset = self.model.objects.filter(**filters)
         else:
-            orders = self.model.objects.none()
-
+            queryset = self.model.objects.none()
         return render(
             request,
             self.template_name,
-            {'form': form, 'orders': orders},
+            self.get_context_data(
+                form=form,
+                object_list=queryset,
+            ),
         )
 
 
-class OrderUpdateView(UpdateView):
+class OrderUpdateView(mixins.DispatchUpdateDeleteViewMixin, UpdateView):
     """Представление для обновления статуса заказа.
 
     Attributes:
@@ -127,9 +120,15 @@ class OrderUpdateView(UpdateView):
     """
 
     model = models.Order
-    fields = ('status',)
+    form_class = forms.OrderUpdateForm
     success_url = reverse_lazy('order:order_list')
     template_name = 'order/order_update.html'
+    warning_message = 'Changing a paid order is prohibited.'
+
+    def get_initial(self) -> dict[str, QuerySet]:
+        initial = super().get_initial()
+        initial['items'] = self.object.items.all()
+        return initial
 
 
 class CurrentDayRevenueView(View):
@@ -158,6 +157,7 @@ class CurrentDayRevenueView(View):
             {
                 'revenue': self.model.objects.get_revenue_for_day().get(
                     'revenue_per_shift',
+                    {},
                 ),
             },
         )
