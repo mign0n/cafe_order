@@ -7,4 +7,5 @@ class ApiConfig(AppConfig):
     Attributes:
         name: Название приложения.
     """
+
     name = 'api'

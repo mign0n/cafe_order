@@ -4,7 +4,7 @@ import environ
 
 env = environ.Env(
     DEBUG=(bool, False),
-    ALLOWED_HOSTS=(list, [])
+    ALLOWED_HOSTS=(list, []),
 )
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -67,7 +67,6 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': Path(BASE_DIR).joinpath('db.sqlite3'),
-
     }
 }
 
