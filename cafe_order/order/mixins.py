@@ -1,11 +1,10 @@
 from typing import Any
 
+from core.constants import OrderStatus
 from django.contrib import messages
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect
 from django.views.generic.edit import ImproperlyConfigured
-
-from order.constants import OrderStatus
 
 
 class DispatchUpdateDeleteViewMixin:

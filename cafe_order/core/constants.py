@@ -1,5 +1,8 @@
 from django.db import models
 
+DELETE_PROHIBITED_MESSAGE = 'Deleting a paid order is prohibited.'
+UPDATE_PROHIBITED_MESSAGE = 'Changing a paid order is prohibited.'
+
 
 class OrderStatus(models.TextChoices):
     """Варианты выбора статуса заказа.

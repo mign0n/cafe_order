@@ -1,5 +1,11 @@
+from core.constants import (
+    DELETE_PROHIBITED_MESSAGE,
+    UPDATE_PROHIBITED_MESSAGE,
+    OrderStatus,
+)
+from django.db.models import Model
 from order.models import Meal, Order
-from rest_framework import filters, viewsets
+from rest_framework import filters, serializers, viewsets
 from rest_framework.decorators import action
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -45,3 +51,23 @@ class OrderViewSet(viewsets.ModelViewSet):
             Ответ с суммой дохода за текущую дату.
         """
         return Response(Order.objects.get_revenue_for_day())
+
+    def perform_update(self, serializer: serializers.Serializer) -> None:
+        """Проверяет статус заказа перед обновлением заказа.
+
+        Raises:
+            ValidationError: Если статус заказа `OrderStatus.PAID_FOR`
+        """
+        if serializer.data.get('status') == OrderStatus.PAID_FOR:
+            raise serializers.ValidationError(UPDATE_PROHIBITED_MESSAGE)
+        super().perform_update(serializer)
+
+    def perform_destroy(self, instance: Model) -> None:
+        """Проверяет статус заказа перед удалением заказа.
+
+        Raises:
+            ValidationError: Если статус заказа `OrderStatus.PAID_FOR`
+        """
+        if instance.status == OrderStatus.PAID_FOR:
+            raise serializers.ValidationError(DELETE_PROHIBITED_MESSAGE)
+        super().perform_destroy(instance)

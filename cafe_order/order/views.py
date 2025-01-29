@@ -1,5 +1,6 @@
 from typing import Any
 
+from core.constants import DELETE_PROHIBITED_MESSAGE, UPDATE_PROHIBITED_MESSAGE
 from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
@@ -57,7 +58,7 @@ class OrderDeleteView(mixins.DispatchUpdateDeleteViewMixin, DeleteView):
 
     model = models.Order
     success_url = reverse_lazy('order:order_list')
-    warning_message = 'Deleting a paid order is prohibited.'
+    warning_message = DELETE_PROHIBITED_MESSAGE
 
 
 class OrderListView(ListView):
@@ -123,9 +124,15 @@ class OrderUpdateView(mixins.DispatchUpdateDeleteViewMixin, UpdateView):
     form_class = forms.OrderUpdateForm
     success_url = reverse_lazy('order:order_list')
     template_name = 'order/order_update.html'
-    warning_message = 'Changing a paid order is prohibited.'
+    warning_message = UPDATE_PROHIBITED_MESSAGE
 
     def get_initial(self) -> dict[str, QuerySet]:
+        """Получает исходные данные для использования в форме.
+
+        Returns:
+            Начальные данные формы.
+
+        """
         initial = super().get_initial()
         initial['items'] = self.object.items.all()
         return initial

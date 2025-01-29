@@ -1,6 +1,6 @@
+from core.constants import OrderStatus
 from django import forms
 
-from order.constants import OrderStatus
 from order.models import Meal, Order
 
 

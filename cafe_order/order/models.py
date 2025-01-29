@@ -1,12 +1,11 @@
 from decimal import Decimal
 
+from core.constants import OrderStatus
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import Sum
 from django.db.utils import cached_property
 from django.utils.timezone import datetime
-
-from order.constants import OrderStatus
 
 
 class OrderManager(models.Manager):
