@@ -1,7 +1,7 @@
 from decimal import Decimal
 
-from core.constants import OrderStatus
-from django.core.validators import MinValueValidator
+from core.constants import MAX_TABLES_NUMBER, OrderStatus
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import Sum
 from django.db.utils import cached_property
@@ -35,10 +35,16 @@ class Meal(models.Model):
         price: Цена блюда.
     """
 
-    name = models.CharField(max_length=200)
+    name = models.CharField(
+        max_length=200,
+        unique=True,
+    )
     price = models.DecimalField(
         max_digits=6,
         decimal_places=2,
+        validators=(
+            MinValueValidator(0),
+        ),
     )
 
     def __str__(self) -> str:
@@ -62,7 +68,10 @@ class Order(models.Model):
         related_name='order_meals',
     )
     table_number = models.PositiveSmallIntegerField(
-        validators=(MinValueValidator(1),),
+        validators=(
+            MinValueValidator(1),
+            MaxValueValidator(MAX_TABLES_NUMBER),
+        ),
     )
     status = models.CharField(
         choices=OrderStatus,
