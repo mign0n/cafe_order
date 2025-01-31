@@ -1,6 +1,6 @@
 import pytest
 from core.constants import OrderStatus
-from django.test import RequestFactory
+from django.test import Client, RequestFactory
 from mixer.backend.django import Mixer
 from mixer.backend.django import mixer as _mixer
 from order.models import Meal, Order
@@ -38,3 +38,8 @@ def paid_orders(mixer, meals) -> list[Order]:
 @pytest.fixture
 def rf() -> RequestFactory:
     return RequestFactory()
+
+
+@pytest.fixture
+def client() -> Client:
+    return Client()
