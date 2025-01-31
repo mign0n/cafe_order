@@ -18,7 +18,7 @@ def meals(mixer: Mixer) -> list[Meal]:
 
 @pytest.fixture
 def order(mixer, meals) -> list[Order]:
-    return mixer.blend('order.order', items=meals)
+    return mixer.blend('order.order', table_number=1, items=meals)
 
 
 @pytest.fixture
