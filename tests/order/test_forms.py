@@ -1,6 +1,7 @@
+from collections.abc import Callable
+
 import pytest
 from core.constants import OrderStatus
-from django.db.models import Model
 from order.forms import MealForm, OrderForm, OrderUpdateForm, SearchOrderForm
 
 pytestmark = pytest.mark.django_db
@@ -15,7 +16,8 @@ class TestMealForm:
 
 
 class TestOrderForm:
-    def test_valid_data(self, order: Model) -> None:
+    def test_valid_data(self, fill_order_batch: Callable) -> None:
+        order = fill_order_batch(1)[0]
         assert OrderForm(
             data={
                 'table_number': order.table_number,
@@ -33,10 +35,15 @@ class TestOrderForm:
 
 
 class TestOrderUpdateForm:
-    def test_valid_data(self, order: Model) -> None:
+    def test_valid_data(
+        self,
+        fill_order_batch: Callable,
+        fill_meal_batch: Callable,
+    ) -> None:
+        order = fill_order_batch(1)[0]
         assert OrderUpdateForm(
             data={
-                'items': [1, 2],
+                'items': [meal.pk for meal in fill_meal_batch()],
                 'table_number': order.table_number,
                 'status': OrderStatus.READY,
             },

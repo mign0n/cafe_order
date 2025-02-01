@@ -1,38 +1,34 @@
+from collections.abc import Callable
+
 import pytest
 from core.constants import OrderStatus
 from django.test import Client, RequestFactory
-from mixer.backend.django import Mixer
-from mixer.backend.django import mixer as _mixer
-from order.models import Meal, Order
+from factory.django import DjangoModelFactory
+
+from tests.factories import MealFactory, OrderFactory
 
 
-@pytest.fixture
-def mixer() -> Mixer:
-    return _mixer
+@pytest.fixture()
+def fill_meal_batch() -> Callable:
+    def wrap(meal_quantity: int = 5) -> DjangoModelFactory:
+        return MealFactory.create_batch(meal_quantity)
+
+    return wrap
 
 
-@pytest.fixture
-def meals(mixer: Mixer) -> list[Meal]:
-    return mixer.cycle(5).blend('order.meal')
+@pytest.fixture()
+def fill_order_batch() -> Callable:
+    def wrap(
+        order_quantity: int = 5,
+        is_paid: bool = False,
+    ) -> DjangoModelFactory:
+        status = OrderStatus.WAITING
+        if is_paid:
+            status = OrderStatus.PAID_FOR
+        factory = OrderFactory.create_batch(order_quantity, status=status)
+        return factory
 
-
-@pytest.fixture
-def order(mixer, meals) -> list[Order]:
-    return mixer.blend('order.order', table_number=1, items=meals)
-
-
-@pytest.fixture
-def orders(mixer, meals) -> list[Order]:
-    return mixer.cycle(5).blend('order.order', items=meals)
-
-
-@pytest.fixture
-def paid_orders(mixer, meals) -> list[Order]:
-    return mixer.cycle(5).blend(
-        'order.order',
-        items=meals,
-        status=OrderStatus.PAID_FOR,
-    )
+    return wrap
 
 
 @pytest.fixture

@@ -1,7 +1,7 @@
+from collections.abc import Callable
 from http import HTTPStatus
 
 import pytest
-from django.db.models import Model
 from django.test import Client
 from django.urls import reverse
 
@@ -29,18 +29,32 @@ class TestOrderURL:
             template.name for template in response.templates
         ]
 
-    def test_order_delete_url(self, client: Client, order: Model) -> None:
+    def test_order_delete_url(
+        self,
+        client: Client,
+        fill_order_batch: Callable,
+    ) -> None:
         response = client.get(
-            reverse('order:order_delete', kwargs={'pk': order.pk}),
+            reverse(
+                'order:order_delete',
+                kwargs={'pk': fill_order_batch(1)[0].pk},
+            ),
         )
         assert response.status_code == HTTPStatus.OK
         assert 'order/order_confirm_delete.html' in [
             template.name for template in response.templates
         ]
 
-    def test_order_update_url(self, client: Client, order: Model) -> None:
+    def test_order_update_url(
+        self,
+        client: Client,
+        fill_order_batch: Callable,
+    ) -> None:
         response = client.get(
-            reverse('order:order_update', kwargs={'pk': order.pk})
+            reverse(
+                'order:order_update',
+                kwargs={'pk': fill_order_batch(1)[0].pk},
+            )
         )
         assert response.status_code == HTTPStatus.OK
         assert 'order/order_update.html' in [

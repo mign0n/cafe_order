@@ -1,10 +1,10 @@
 from collections.abc import Callable
+from decimal import Decimal
 from http import HTTPStatus
 
 import pytest
 from core.constants import OrderStatus
 from django.contrib.messages.storage.fallback import FallbackStorage
-from django.db.models import Model
 from django.test import RequestFactory
 from django.urls import reverse
 from order.forms import MealForm, OrderForm, OrderUpdateForm, SearchOrderForm
@@ -68,10 +68,10 @@ class TestOrderCreateView:
     def test_post_valid_data(
         self,
         rf: RequestFactory,
-        meals: list[Model],
+        fill_meal_batch: Callable,
     ) -> None:
         data = {
-            'items': meals[0].pk,
+            'items': fill_meal_batch()[0].pk,
             'table_number': 1,
         }
         path = reverse('order:order')
@@ -87,10 +87,10 @@ class TestOrderCreateView:
     def test_post_invalid_data(
         self,
         rf: RequestFactory,
-        meals: list[Model],
+        fill_meal_batch: Callable,
     ) -> None:
         data = {
-            'items': meals[0].pk,
+            'items': fill_meal_batch(1)[0].pk,
             'table_number': -1,
         }
         response = self._view(rf.post(reverse('order:order'), data))
@@ -109,10 +109,11 @@ class TestOrderListView:
     def test_get_order_list_view(
         self,
         rf: RequestFactory,
-        orders: list[Model],
+        fill_order_batch: Callable,
     ) -> None:
         url = reverse('order:order_list')
         response = self._view(rf.get(url))
+        orders = fill_order_batch()
         assert response.status_code == 200
         assert isinstance(response.context_data['form'], SearchOrderForm)
         assert list(response.context_data['object_list']) == orders
@@ -120,8 +121,9 @@ class TestOrderListView:
     def test_post_order_list_view_with_valid_form_data(
         self,
         rf: RequestFactory,
-        order: Model,
+        fill_order_batch: Callable,
     ) -> None:
+        order = fill_order_batch(1)[0]
         url = reverse('order:order_list')
         data = {
             'table_number': order.table_number,
@@ -134,8 +136,9 @@ class TestOrderListView:
     def test_filter_orders_by_table_number(
         self,
         rf: RequestFactory,
-        orders: list[Model],
+        fill_order_batch: Callable,
     ) -> None:
+        orders = fill_order_batch()
         data = {'table_number': orders[0].table_number}
         response = self._view(
             rf.post(
@@ -150,21 +153,17 @@ class TestOrderListView:
                 assert str(order.table_number) in content
                 assert order.items.last().name in content
             else:
-                assert str(order.table_number) not in content
+                assert order.items.last().name not in content
 
     def test_filter_orders_by_status(
         self,
         rf: RequestFactory,
-        orders: list[Model],
-        meals: list[Model],
+        fill_order_batch: Callable,
     ) -> None:
-        order_1 = Order.objects.create(
-            table_number=10,
-            status=OrderStatus.READY,
-        )
-        order_1.items.set(meals)
-        orders.append(order_1)
-        data = {'status': order_1.status}
+        orders = fill_order_batch()
+        orders[0].status = OrderStatus.READY
+        orders[0].save()
+        data = {'status': OrderStatus.READY}
 
         url = reverse('order:order_list')
         response = self._view(rf.post(url, data))
@@ -176,7 +175,7 @@ class TestOrderListView:
                 assert str(order.table_number) in content
                 assert order.items.last().name in content
             else:
-                assert str(order.table_number) not in content
+                assert order.items.last().name not in content
 
 
 class TestOrderUpdateView:
@@ -187,9 +186,9 @@ class TestOrderUpdateView:
     def test_get(
         self,
         rf: RequestFactory,
-        order: list[Model],
+        fill_order_batch: Callable,
     ) -> None:
-        kwargs = {'pk': order.pk}
+        kwargs = {'pk': fill_order_batch(1)[0].pk}
         response = self._view(
             rf.get(reverse('order:order_update', kwargs=kwargs)),
             **kwargs,
@@ -199,11 +198,14 @@ class TestOrderUpdateView:
         assert isinstance(response.context_data['form'], OrderUpdateForm)
 
     def test_post_valid_data(
-        self, rf: RequestFactory, order: Model, meals: list[Model]
+        self,
+        rf: RequestFactory,
+        fill_order_batch: Callable,
+        fill_meal_batch: Callable,
     ) -> None:
-        kwargs = {'pk': order.pk}
+        kwargs = {'pk': fill_order_batch(1)[0].pk}
         data = {
-            'items': meals[0].pk,
+            'items': fill_meal_batch(1)[0].pk,
             'table_number': 2,
             'status': OrderStatus.READY,
         }
@@ -219,12 +221,10 @@ class TestOrderUpdateView:
     def test_post_invalid_data(
         self,
         rf: RequestFactory,
-        order: Model,
-        meals: list[Model],
+        fill_order_batch: Callable,
     ) -> None:
-        kwargs = {'pk': order.pk}
+        kwargs = {'pk': fill_order_batch(1)[0].pk}
         data = {
-            'items': meals[1].pk,
             'table_number': 0,
             'status': OrderStatus.READY,
         }
@@ -245,7 +245,12 @@ class TestOrderDeleteView:
     def _view(self) -> Callable:
         return OrderDeleteView.as_view()
 
-    def test_get(self, rf: RequestFactory, order: Model) -> None:
+    def test_get(
+        self,
+        rf: RequestFactory,
+        fill_order_batch: Callable,
+    ) -> None:
+        order = fill_order_batch(1)[0]
         kwargs = {'pk': order.pk}
         response = self._view(
             rf.get(reverse('order:order_delete', kwargs=kwargs)),
@@ -257,8 +262,9 @@ class TestOrderDeleteView:
     def test_post_valid_status(
         self,
         rf: RequestFactory,
-        orders: list[Model],
+        fill_order_batch: Callable,
     ) -> None:
+        orders = fill_order_batch()
         kwargs = {'pk': orders[0].pk}
         count = len(orders)
         response = self._view(
@@ -274,9 +280,9 @@ class TestOrderDeleteView:
     def test_post_invalid_status(
         self,
         rf: RequestFactory,
-        orders: list[Order],
+        fill_order_batch: Callable,
     ) -> None:
-        order = orders[0]
+        order = fill_order_batch()[0]
         order.status = OrderStatus.PAID_FOR
         order.save()
         kwargs = {'pk': order.pk}
@@ -296,11 +302,16 @@ class TestCurrentDayRevenueView:
     def _view(self) -> Callable:
         return CurrentDayRevenueView.as_view()
 
-    def test_get(self, rf: RequestFactory, paid_orders: list[Order]) -> None:
+    def test_get(
+        self,
+        rf: RequestFactory,
+        fill_order_batch: Callable,
+    ) -> None:
+        orders = fill_order_batch(is_paid=True)
         response = self._view(rf.get(reverse('order:revenue')))
 
         assert response.status_code == HTTPStatus.OK
         assert (
-            str(sum(order.price for order in paid_orders))[:6]
+            str(sum(order.price for order in orders).quantize(Decimal('0.01')))
             in response.content.decode()
         )
