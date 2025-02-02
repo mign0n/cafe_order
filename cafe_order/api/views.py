@@ -58,7 +58,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         Raises:
             ValidationError: Если статус заказа `OrderStatus.PAID_FOR`
         """
-        if serializer.data.get('status') == OrderStatus.PAID_FOR:
+        if serializer.validated_data.get('status') == OrderStatus.PAID_FOR:
             raise serializers.ValidationError(UPDATE_PROHIBITED_MESSAGE)
         super().perform_update(serializer)
 

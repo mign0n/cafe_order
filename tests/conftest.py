@@ -25,8 +25,7 @@ def fill_order_batch() -> Callable:
         status = OrderStatus.WAITING
         if is_paid:
             status = OrderStatus.PAID_FOR
-        factory = OrderFactory.create_batch(order_quantity, status=status)
-        return factory
+        return OrderFactory.create_batch(order_quantity, status=status)
 
     return wrap
 

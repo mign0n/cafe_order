@@ -30,8 +30,6 @@ class OrderSerializer(serializers.ModelSerializer):
         items: Объект с данными о блюдах.
     """
 
-    items = MealSerializer(many=True)
-
     class Meta:
         """Метаданные сериализатора.
 
@@ -49,5 +47,10 @@ class OrderSerializer(serializers.ModelSerializer):
             'items',
             'price',
             'status',
+            'created_at',
+        )
+        read_only_fields = (
+            'id',
+            'price',
             'created_at',
         )
